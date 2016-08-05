@@ -24,7 +24,9 @@ for file in /usr/share/spotify/Apps/*; do
 
 	for style in $no_extension/css/*; do
 		echo $style;
-		sed -i "s/$1/$2/g" $style;
+		for $code in $GREEN; do
+			sed -i "s/$code/$1/g" $style;
+		done
 	done
 
 	if [[ "$no_extension" != "/usr/share/spotify/Apps/.backups" ]]; then
