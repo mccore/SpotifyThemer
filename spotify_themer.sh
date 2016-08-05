@@ -80,11 +80,18 @@ for file in /usr/share/spotify/Apps/*; do
 	fi
 done
 
-mkdir /usr/share/spotify/icons/.backups;
+if [[ ! -f /usr/share/spotify/icons/.backups ]]; then
+	mkdir /usr/share/spotify/icons/.backups;
+fi
+
 for file in /usr/share/spotify/icons/*; do
-	cp $file /usr/share/spotify/icons/.backups;
+	no_path=$(echo "$file" | sed "s/\/usr\/share\/spotify\/icons\///")
+	if [[ ! -f /usr/share/spotify/Apps/.backups/$no_path ]]; then
+		cp $file /usr/share/spotify/icons/.backups;
+	fi
 done
 
+#the reason this is broken up into every single file is that each has a different fuzzing percentage to try to get rid of the remaining green. It doesn't work very well.
 if [[ "$1" == "-i" || "$1" == "icons" ]]; then
 	convert spotify-linux-512.png -fuzz 47.102% -fill "#$choice" -opaque "#1ED760" spotify-linux-512.png
 	convert spotify-linux-256.png -fuzz 47.102% -fill "#$choice" -opaque "#1ED760" spotify-linux-256.png
