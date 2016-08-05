@@ -1,9 +1,15 @@
 #!/bin/bash
 
-#Color sets
-GREEN='1ED760 1DB954 1CA24B'
+#TODO:
+#1) up arrow in charts should reain unchanged
+#2) add a usage flag
+#3) add more options for changing colors
+#4) add comments to code
+#5) allow people to just enter color options on the command line
+	#-this can be done by displaying options and letting people choose or by outputting choices in help flag (I like his option best)
 
 #Colors
+GREEN='1ED760 1DB954 1CA24B'
 RED="F44236"
 
 if [[ ! -f /usr/share/spotify/Apps/.backups ]]; then
@@ -33,7 +39,7 @@ for file in /usr/share/spotify/Apps/*; do
 		rm $file;
 		cd $no_extension;
 		zip -r $file *;
-		cd -;
+		cd - 1> /dev/null;
 		rm -rf $no_extension;
 	fi
 done
