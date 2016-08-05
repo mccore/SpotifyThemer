@@ -5,7 +5,7 @@
 #2) add a usage flag
 #3) add more options for changing colors
 #4) add comments to code
-#5) allow people to just enter color options on the command line
+#5) allow people to just enter color options on the command line (done)
 	#-this can be done by displaying options and letting people choose or by outputting choices in help flag (I like his option best)
 
 #Colors
@@ -13,9 +13,27 @@ declare -A COLORS
 GREEN="1ED760 1DB954 1CA24B"
 COLORS["RED"]="F44236"
 COLORS["CYAN"]="33E3FF"
+COLORS["GREEN(DEF)"]="1ED760"
+COLORS["BLACK"]="000000"
+COLORS["YELLOW"]="CCDC38"
+COLORS["LIGHTBLUE"]="00BBD4"
+COLORS["PURPLE"]="6639B6"
+COLORS["WHITE"]="FFFFFF"
+COLORS["FLAMES"]="FF9800"
+
+if [[ "$1" == "-h" || "$1" == "help" || "$1" == "--help" ]]; then
+	echo "Color options:"
+	for key in ${!COLORS[@]}; do
+    		echo ${key} "=" ${COLORS[${key}]}
+	done
+	echo "Use -hex or hex as first argument and then a hex code as the second argument to use your own color"
+	exit
+fi
 
 if [[ " ${COLORS[$1]}" ]]; then
 	choice=${COLORS[$1]}
+elif [[ "$1" == "-hex" || "$1" == "hex" ]]; then
+	choice=$2
 else
 	echo "Not a choice! Exiting..."
 	exit;
