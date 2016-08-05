@@ -10,7 +10,7 @@
 
 #Colors
 declare -A COLORS
-GREEN="1ED760 1DB954 1CA24B"
+SPOTIFY_GREEN="1ED760 1DB954 1CA24B"
 COLORS["RED"]="F44236"
 COLORS["CYAN"]="33E3FF"
 COLORS["GREEN(DEF)"]="1ED760"
@@ -30,7 +30,7 @@ if [[ "$1" == "-h" || "$1" == "help" || "$1" == "--help" ]]; then
 	exit
 fi
 
-if [[ " ${COLORS[$1]}" ]]; then
+if [ ${COLORS[$1]} ]; then
 	choice=${COLORS[$1]}
 elif [[ "$1" == "-hex" || "$1" == "hex" ]]; then
 	choice=$2
@@ -57,7 +57,7 @@ for file in /usr/share/spotify/Apps/*; do
 
 	for style in $no_extension/css/*; do
 		echo $style;
-		for code in $GREEN; do
+		for code in $SPOTIFY_GREEN; do
 			sed -i "s/$code/$choice/g" $style;
 		done
 	done
