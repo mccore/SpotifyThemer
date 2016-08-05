@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Color sets
-GREEN="1ED760 1DB954 1CA24B"
+GREEN='1ED760 1DB954 1CA24B'
 
 #Colors
 RED="F44236"
@@ -24,7 +24,7 @@ for file in /usr/share/spotify/Apps/*; do
 
 	for style in $no_extension/css/*; do
 		echo $style;
-		for $code in $GREEN; do
+		for code in $GREEN; do
 			sed -i "s/$code/$1/g" $style;
 		done
 	done
