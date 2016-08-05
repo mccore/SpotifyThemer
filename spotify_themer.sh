@@ -1,11 +1,18 @@
 #!/bin/bash
 
+#Color sets
+GREEN="1ED760 1DB954 1CA24B"
+
+#Colors
+RED="F44236"
+
 if [[ ! -f /usr/share/spotify/Apps/.backups ]]; then
 	mkdir /usr/share/spotify/Apps/.backups;
 fi
 
 for file in /usr/share/spotify/Apps/*; do
-	if [[ condition ]]; then
+	no_path=$(echo "$file" | sed "s/\/usr\/share\/spotify\/Apps\///")
+	if [[ ! -f /usr/share/spotify/Apps/.backups/$no_path ]]; then
 		cp $file /usr/share/spotify/Apps/.backups;
 	fi
 
