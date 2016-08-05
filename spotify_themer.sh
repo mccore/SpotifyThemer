@@ -9,8 +9,17 @@
 	#-this can be done by displaying options and letting people choose or by outputting choices in help flag (I like his option best)
 
 #Colors
-GREEN='1ED760 1DB954 1CA24B'
-RED="F44236"
+declare -A COLORS
+GREEN="1ED760 1DB954 1CA24B"
+COLORS["RED"]="F44236"
+COLORS["CYAN"]="33E3FF"
+
+if [[ " ${COLORS[$1]}" ]]; then
+	choice=${COLORS[$1]}
+else
+	echo "Not a choice! Exiting..."
+	exit;
+fi
 
 if [[ ! -f /usr/share/spotify/Apps/.backups ]]; then
 	mkdir /usr/share/spotify/Apps/.backups;
@@ -31,7 +40,7 @@ for file in /usr/share/spotify/Apps/*; do
 	for style in $no_extension/css/*; do
 		echo $style;
 		for code in $GREEN; do
-			sed -i "s/$code/$1/g" $style;
+			sed -i "s/$code/$choice/g" $style;
 		done
 	done
 
