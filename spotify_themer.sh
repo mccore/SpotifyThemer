@@ -2,9 +2,9 @@
 
 #TODO:
 #1) up arrow in charts should reain unchanged
-#2) add a usage flag
+#2) add a usage flag (done)
 #3) add more options for changing colors
-#4) add comments to code
+#4) add comments to code (done)
 #5) allow people to just enter color options on the command line (done)
 	#-this can be done by displaying options and letting people choose or by outputting choices in help flag (I like his option best)
 
@@ -26,10 +26,11 @@ if [[ "$1" == "-h" || "$1" == "help" || "$1" == "--help" ]]; then
 	for key in ${!COLORS[@]}; do
     		echo ${key} "=" ${COLORS[${key}]}
 	done
-	echo "Use -hex or hex as first argument and then a hex code as the second argument to use your own color"
+		echo "Use -hex or hex as first argument and then a hex code as the second argument to use your own color"
 	exit
 fi
 
+#set the choice to be used by sed when changing color codes in the extracted css ciles
 if [ ${COLORS[$1]} ]; then
 	choice=${COLORS[$1]}
 elif [[ "$1" == "-hex" || "$1" == "hex" ]]; then
@@ -39,22 +40,26 @@ else
 	exit;
 fi
 
+#create a backup folder of the original .spa files (and only the originals). This means that after every update this folder will need to be cleared/deleted.
 if [[ ! -f /usr/share/spotify/Apps/.backups ]]; then
 	mkdir /usr/share/spotify/Apps/.backups;
 fi
 
+#loop through each .spa file
 for file in /usr/share/spotify/Apps/*; do
 	no_path=$(echo "$file" | sed "s/\/usr\/share\/spotify\/Apps\///")
+	#ensure that only the originals are backed up
 	if [[ ! -f /usr/share/spotify/Apps/.backups/$no_path ]]; then
 		cp $file /usr/share/spotify/Apps/.backups;
 	fi
 
 	no_extension=$(echo "$file" | sed "s/.spa//")
-	#echo "$no_extension"/css
+	#extract the .spa files to folders so that they can be edited. file-roller is used since the .spa files act like .zip files. The if statement is to leave the backup folder untouched
 	if [[ "$no_extension" != "/usr/share/spotify/Apps/.backups" ]]; then
 		file-roller --force -f $file --extract-to=$no_extension 2> /dev/null;
 	fi
 
+	#every .spa file (and therefore .spa folder) has a css subfolder. The loop goes through all css files in that css folder and changes the default hex code to the specified one ($choice)
 	for style in $no_extension/css/*; do
 		echo $style;
 		for code in $SPOTIFY_GREEN; do
@@ -62,6 +67,7 @@ for file in /usr/share/spotify/Apps/*; do
 		done
 	done
 
+	#re-zip the .spa fodler (and therefore the changed files) and remove the folder afterwards. It is important that zip is used because .spa are basically .zip.
 	if [[ "$no_extension" != "/usr/share/spotify/Apps/.backups" ]]; then
 		rm $file;
 		cd $no_extension;
