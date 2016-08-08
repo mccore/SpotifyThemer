@@ -40,7 +40,9 @@ if [ ${COLORS[$1]} ]; then
 elif [[ "$1" == "-hex" || "$1" == "hex" ]]; then
 	choice=$2
 elif [[ "$1" == "-i" || "$1" == "icons" ]]; then
-	choice=$2
+	choice=${COLORS[$2]}
+elif [[ ("$1" == "-i" || "$1" == "icons") && ("$2" == "-hex" || "$2" == "hex") ]]; then
+	choice=$3
 else
 	echo "Not a choice! Exiting..."
 	exit;
