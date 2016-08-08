@@ -94,7 +94,7 @@ for file in $icons/*; do
 	fi
 done
 
-#the reason this is broken up into every single file is that each has a different fuzzing percentage to try to get rid of the remaining green. It doesn't work very well.
+#convert the 512 to red since with fuzzing it loosk the best. Then resize that for the rest. The last command resizes the 512 and creates an ico which is what spotify actually uses. I have no idea what the other .png files are for. It is possible they are used only once at install to create the initial ico and then never again.
 if [[ "$1" == "-i" || "$1" == "icons" ]]; then
 	convert $icons/spotify-linux-512.png -fuzz 47.102% -fill "#$choice" -opaque "#1ED760" $icons/spotify-linux-512.png
 	convert -resize 256x256 $icons/spotify-linux-512.png $icons/spotify-linux-256.png
