@@ -94,12 +94,14 @@ done
 #the reason this is broken up into every single file is that each has a different fuzzing percentage to try to get rid of the remaining green. It doesn't work very well.
 if [[ "$1" == "-i" || "$1" == "icons" ]]; then
 	convert spotify-linux-512.png -fuzz 47.102% -fill "#$choice" -opaque "#1ED760" spotify-linux-512.png
-	convert spotify-linux-256.png -fuzz 47.102% -fill "#$choice" -opaque "#1ED760" spotify-linux-256.png
-	convert spotify-linux-128.png -fuzz 40% -fill "#$choice" -opaque "#1ED760" spotify-linux-128.png
-	convert spotify-linux-64.png -fuzz 40% -fill "#$choice" -opaque "#1ED760" spotify-linux-64.png
-	convert spotify-linux-48.png -fuzz 36% -fill "#$choice" -opaque "#1ED760" spotify-linux-48.png
-	convert spotify-linux-32.png -fuzz 34% -fill "#$choice" -opaque "#1ED760" spotify-linux-32.png
-	convert spotify-linux-24.png -fuzz 30% -fill "#$choice" -opaque "#1ED760" spotify-linux-24.png
-	convert spotify-linux-22.png -fuzz 30% -fill "#$choice" -opaque "#1ED760" spotify-linux-22.png
-	convert spotify-linux-16.png -fuzz 22% -fill "#$choice" -opaque "#1ED760" spotify-linux-16.png
+	convert -resize 256x256 spotify-linux-512.png spotify-linux-256.png
+	convert -resize 128x128 spotify-linux-512.png spotify-linux-128.png
+	convert -resize 64x64 spotify-linux-512.png spotify-linux-64.png
+	convert -resize 48x48 spotify-linux-512.png spotify-linux-48.png
+	convert -resize 32x32 spotify-linux-512.png spotify-linux-32.png
+	convert -resize 24x24 spotify-linux-512.png spotify-linux-24.png
+	convert -resize 22x22 spotify-linux-512.png spotify-linux-22.png
+	convert -resize 16x16 spotify-linux-512.png spotify-linux-16.png
+	convert -background transparent spotify-linux-512.png -define icon:auto-resize=16,32,48,256 spotify_icon
 fi
+
