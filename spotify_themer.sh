@@ -21,6 +21,9 @@ COLORS["PURPLE"]="6639B6"
 COLORS["WHITE"]="FFFFFF"
 COLORS["FLAMES"]="FF9800"
 
+Apps="/usr/share/spotify/Apps"
+icons="/usr/share/spotify/icons"
+
 if [[ "$1" == "-h" || "$1" == "help" || "$1" == "--help" ]]; then
 	echo "Color options:"
 	for key in ${!COLORS[@]}; do
@@ -44,21 +47,21 @@ else
 fi
 
 #create a backup folder of the original .spa files (and only the originals). This means that after every update this folder will need to be cleared/deleted.
-if [[ ! -f /usr/share/spotify/Apps/.backups ]]; then
-	mkdir /usr/share/spotify/Apps/.backups;
+if [[ ! -f $Apps/.backups ]]; then
+	mkdir $Apps/.backups;
 fi
 
 #loop through each .spa file
-for file in /usr/share/spotify/Apps/*; do
+for file in $Apps/*; do
 	no_path=$(echo "$file" | sed "s/\/usr\/share\/spotify\/Apps\///")
 	#ensure that only the originals are backed up
-	if [[ ! -f /usr/share/spotify/Apps/.backups/$no_path ]]; then
-		cp $file /usr/share/spotify/Apps/.backups;
+	if [[ ! -f $Apps/.backups/$no_path ]]; then
+		cp $file $Apps/.backups;
 	fi
 
 	no_extension=$(echo "$file" | sed "s/.spa//")
 	#extract the .spa files to folders so that they can be edited. file-roller is used since the .spa files act like .zip files. The if statement is to leave the backup folder untouched
-	if [[ "$no_extension" != "/usr/share/spotify/Apps/.backups" ]]; then
+	if [[ "$no_extension" != "$Apps/.backups" ]]; then
 		file-roller --force -f $file --extract-to=$no_extension 2> /dev/null;
 	fi
 
@@ -71,7 +74,7 @@ for file in /usr/share/spotify/Apps/*; do
 	done
 
 	#re-zip the .spa fodler (and therefore the changed files) and remove the folder afterwards. It is important that zip is used because .spa are basically .zip.
-	if [[ "$no_extension" != "/usr/share/spotify/Apps/.backups" ]]; then
+	if [[ "$no_extension" != "$Apps/.backups" ]]; then
 		rm $file;
 		cd $no_extension;
 		zip -r $file *;
@@ -80,28 +83,28 @@ for file in /usr/share/spotify/Apps/*; do
 	fi
 done
 
-if [[ ! -f /usr/share/spotify/icons/.backups ]]; then
-	mkdir /usr/share/spotify/icons/.backups;
+if [[ ! -f $icons/.backups ]]; then
+	mkdir $icons/.backups;
 fi
 
-for file in /usr/share/spotify/icons/*; do
+for file in $icons/*; do
 	no_path=$(echo "$file" | sed "s/\/usr\/share\/spotify\/icons\///")
-	if [[ ! -f /usr/share/spotify/Apps/.backups/$no_path ]]; then
-		cp $file /usr/share/spotify/icons/.backups;
+	if [[ ! -f $Apps/.backups/$no_path ]]; then
+		cp $file $icons/.backups;
 	fi
 done
 
 #the reason this is broken up into every single file is that each has a different fuzzing percentage to try to get rid of the remaining green. It doesn't work very well.
 if [[ "$1" == "-i" || "$1" == "icons" ]]; then
-	convert spotify-linux-512.png -fuzz 47.102% -fill "#$choice" -opaque "#1ED760" spotify-linux-512.png
-	convert -resize 256x256 spotify-linux-512.png spotify-linux-256.png
-	convert -resize 128x128 spotify-linux-512.png spotify-linux-128.png
-	convert -resize 64x64 spotify-linux-512.png spotify-linux-64.png
-	convert -resize 48x48 spotify-linux-512.png spotify-linux-48.png
-	convert -resize 32x32 spotify-linux-512.png spotify-linux-32.png
-	convert -resize 24x24 spotify-linux-512.png spotify-linux-24.png
-	convert -resize 22x22 spotify-linux-512.png spotify-linux-22.png
-	convert -resize 16x16 spotify-linux-512.png spotify-linux-16.png
-	convert -background transparent spotify-linux-512.png -define icon:auto-resize=16,32,48,256 spotify_icon
+	convert $icons/spotify-linux-512.png -fuzz 47.102% -fill "#$choice" -opaque "#1ED760" $icons/spotify-linux-512.png
+	convert -resize 256x256 $icons/spotify-linux-512.png $icons/spotify-linux-256.png
+	convert -resize 128x128 $icons/spotify-linux-512.png $icons/spotify-linux-128.png
+	convert -resize 64x64 $icons/spotify-linux-512.png $icons/spotify-linux-64.png
+	convert -resize 48x48 $icons/spotify-linux-512.png $icons/spotify-linux-48.png
+	convert -resize 32x32 $icons/spotify-linux-512.png $icons/spotify-linux-32.png
+	convert -resize 24x24 $icons/spotify-linux-512.png $icons/spotify-linux-24.png
+	convert -resize 22x22 $icons/spotify-linux-512.png $icons/spotify-linux-22.png
+	convert -resize 16x16 $icons/spotify-linux-512.png $icons/spotify-linux-16.png
+	convert -background transparent $icons/spotify-linux-512.png -define icon:auto-resize=16,32,48,256 $icons/spotify_icon
 fi
 
