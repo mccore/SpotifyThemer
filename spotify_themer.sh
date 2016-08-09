@@ -1,10 +1,8 @@
 #!/bin/bash
 
 #TODO:
-#1) up arrow in charts should reain unchanged
-#2) compile .png files into .ico
+#2) implement better argument handling
 #3) add more options for changing colors (in progress)
-#4) add comments to code (done)
 #5) allow people to just enter color options on the command line (done)
 	#-this can be done by displaying options and letting people choose or by outputting choices in help flag (I like his option best)
 
@@ -30,7 +28,6 @@ if [[ "$1" == "-h" || "$1" == "help" || "$1" == "--help" ]]; then
     		echo ${key} "=" ${COLORS[${key}]}
 	done
 		echo "Use -hex or hex as first argument and then a hex code as the second argument to use your own color"
-		echo "Note: Changed icons look terrible. This is being worked on. As of now it is recommended not to change them."
 	exit
 fi
 
@@ -67,12 +64,16 @@ for file in $Apps/*; do
 		file-roller --force -f $file --extract-to=$no_extension 2> /dev/null;
 	fi
 
+	#this variable is used to ensure that the little green arrows in the charts stay green
+	CHARTS="*chart*"
 	#every .spa file (and therefore .spa folder) has a css subfolder. The loop goes through all css files in that css folder and changes the default hex code to the specified one ($choice)
 	for style in $no_extension/css/*; do
-		echo $style;
-		for code in $SPOTIFY_GREEN; do
-			sed -i "s/$code/$choice/g" $style;
-		done
+		if ! [[ $style == $CHARTS ]];then
+			echo $style;
+			for code in $SPOTIFY_GREEN; do
+				sed -i "s/$code/$choice/g" $style;
+			done
+		fi
 	done
 
 	#re-zip the .spa fodler (and therefore the changed files) and remove the folder afterwards. It is important that zip is used because .spa are basically .zip.
@@ -96,7 +97,7 @@ for file in $icons/*; do
 	fi
 done
 
-#convert the 512 to red since with fuzzing it loosk the best. Then resize that for the rest. The last command resizes the 512 and creates an ico which is what spotify actually uses. I have no idea what the other .png files are for. It is possible they are used only once at install to create the initial ico and then never again.
+#convert the 512 to red since with fuzzing it looks the best. Then resize that for the rest. The last command resizes the 512 and creates an ico which is what spotify actually uses. I have no idea what the other .png files are for. It is possible they are used only once at install to create the initial ico and then never again.
 if [[ "$1" == "-i" || "$1" == "icons" ]]; then
 	convert $icons/spotify-linux-512.png -fuzz 47.102% -fill "#$choice" -opaque "#1ED760" $icons/spotify-linux-512.png
 	convert -resize 256x256 $icons/spotify-linux-512.png $icons/spotify-linux-256.png
