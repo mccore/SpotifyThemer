@@ -68,11 +68,16 @@ for file in $Apps/*; do
 	fi
 
 	#every .spa file (and therefore .spa folder) has a css subfolder. The loop goes through all css files in that css folder and changes the default hex code to the specified one ($choice)
+	# We want to exlude the colors attached to 'charts'
+    # There are only two such cases, so this naive regex will do.
+    CHARTS="*chart*"
 	for style in $no_extension/css/*; do
-		echo $style;
-		for code in $SPOTIFY_GREEN; do
-			sed -i "s/$code/$choice/g" $style;
-		done
+     	if ! [[ $style == $CHARTS ]];then
+			echo $style;
+			for code in $SPOTIFY_GREEN; do
+				sed -i "s/$code/$choice/g" $style;
+			done
+		fi
 	done
 
 	#re-zip the .spa fodler (and therefore the changed files) and remove the folder afterwards. It is important that zip is used because .spa are basically .zip.
