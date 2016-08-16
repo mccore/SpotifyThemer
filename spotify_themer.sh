@@ -28,61 +28,63 @@ ICONSDIR="/usr/share/spotify/icons"
 
 # Assume false
 DO_ICONS=false
-while test $# -gt 0; do
-        case "$1" in
-                -c)
-						shift
-						if test $# -gt 0; then
-							if [ ${COLORS[$1]} ]; then
-								export choice=${COLORS[$1]}
-                            else
-							    echo "not a valid color option"
-                                exit 1
-							fi
-						else
-								echo "no color specified"
-								exit 1
-						fi
-						shift
-						;;
-				-h|--help)
-                        echo "SpotifyThemer - Customize the theme of spotify for linux"
-                        echo " "
-                        echo "spotify_themer [options] [COLOR]"
-                        echo " "
-						echo "Colors: RED, CYAN, BLACK, YELLOW, LIGHTBLUE, PURPLE,"
-                        echo "        WHITE, FLAMES"
-		                echo " "
-                        echo "options:"
-                        echo "-c, --color               specify a color option"
-						echo "-h, --help                show brief help"
-                        echo "-i, --icons               create new icons with COLOR"
-                        exit 0
-                        ;;
-                -i)
-                        shift
-                        if test $# -gt 0; then
-                                export choice=${COLORS[$1]}
-								export DO_ICONS=true
-                        else
-                                echo "no color specified"
-                                exit 1
-                        fi
-                        shift
-                        ;;
-                #icons*)
-                #        export PROCESS=`echo $1 | sed -e 's/^[^=]*=//g'`
-                #        shift
-                #        ;;
-                *)
-                        break
-                        ;;
-        esac
+DO_COLORS=false
+while getopts ":C:I:cih" opt; do
+  case $opt in
+    C)
+      #echo "-c was triggered, Parameter: $OPTARG" >&2
+      if [ ${COLORS[$OPTARG]} ]; then
+        export choice=${COLORS[$OPTARG]}
+      else
+        export choice=$OPTARG
+      fi
+      export DO_COLORS=true
+      ;;
+     c)
+        export DO_COLORS=true
+        ;;
+     i)
+      #echo "-i was triggered" >&2
+      export DO_ICONS=true
+      ;;
+     I)
+      if [ ${COLORS[$OPTARG]} ]; then
+        export choice=${COLORS[$OPTARG]}
+      else
+        export choice=$OPTARG
+      fi
+      export DO_ICONS=true
+      ;;
+     h)
+      #echo "-h was triggered" >&2
+      echo "SpotifyThemer - Customize the theme of spotify for linux"
+      echo " "
+      #echo "spotify_themer [options] [COLOR]"
+      echo " "
+      echo "Colors: RED, CYAN, BLACK, YELLOW, LIGHTBLUE, PURPLE,"
+      echo "        WHITE, FLAMES"
+      echo " "
+      echo "options:"
+      echo "-C <color>              specify a color option (can be pre-installed or hex)"
+      echo "-c                           don't specify color, to be used in combo with -I"
+      echo "-I <color>               specify a color option (can be pre-installed or hex)"
+      echo "-i                            don't specify a color, to be used in combo with -C"
+      echo "-h                           show brief help"
+      exit 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
 done
 
-
 ###########################################
-echo "Starting spotify_themer with color $1"
+echo "Starting spotify_themer with color $choice"
 
 #create a backup folder of the original .spa files (and only the originals). This means that after every update this folder will need to be cleared/deleted.
 if [[ ! -d $APPSDIR/.backups ]]; then
@@ -93,46 +95,48 @@ else
 fi
 
 #loop through each .spa file
-for file in $APPSDIR/*; do
-	no_path=$(echo "$file" | sed "s/\/usr\/share\/spotify\/Apps\///")
-	#ensure that only the originals are backed up
-	if [[ ! -f $APPSDIR/.backups/$no_path ]]; then
-		cp $file $APPSDIR/.backups;
-	fi
+if [ "$DO_COLORS" = true ]; then
+	for file in $APPSDIR/*; do
+		no_path=$(echo "$file" | sed "s/\/usr\/share\/spotify\/Apps\///")
+		#ensure that only the originals are backed up
+		if [[ ! -f $APPSDIR/.backups/$no_path ]]; then
+			cp $file $APPSDIR/.backups;
+		fi
 
-	no_extension=$(echo "$file" | sed "s/.spa//")
-	#extract the .spa files to folders so that they can be edited. file-roller is used since the .spa files act like .zip files. The if statement is to leave the backup folder untouched
-	if [[ "$no_extension" != "$APPSDIR/.backups" ]]; then
-		file-roller --force -f $file --extract-to=$no_extension 2> /dev/null;
-	fi
+		no_extension=$(echo "$file" | sed "s/.spa//")
+		#extract the .spa files to folders so that they can be edited. file-roller is used since the .spa files act like .zip files. The if statement is to leave the backup folder untouched
+		if [[ "$no_extension" != "$APPSDIR/.backups" ]]; then
+			file-roller --force -f $file --extract-to=$no_extension 2> /dev/null;
+		fi
 
-	#every .spa file (and therefore .spa folder) has a css subfolder. The loop goes through all css files in that css folder and changes the default hex code to the specified one ($choice)
-	# We want to exlude the colors attached to 'charts'
-    # There are only two such cases, so this naive regex will do.
-    CHARTS="*chart*"
-	for style in $no_extension/css/*; do
-     	if ! [[ $style == $CHARTS ]];then
-			echo $style;
-			for code in $SPOTIFY_GREEN; do
-				sed -i "s/$code/$choice/g" $style;
-			done
+		#every .spa file (and therefore .spa folder) has a css subfolder. The loop goes through all css files in that css folder and changes the default hex code to the specified one ($choice)
+		# We want to exlude the colors attached to 'charts'
+	    # There are only two such cases, so this naive regex will do.
+	    CHARTS="*chart*"
+		for style in $no_extension/css/*; do
+	     	if ! [[ $style == $CHARTS ]];then
+				echo $style;
+				for code in $SPOTIFY_GREEN; do
+					sed -i "s/$code/$choice/g" $style;
+				done
+			fi
+		done
+
+		if [[ $no_path == "zlink.spa" ]]; then
+			echo "$no_extension/bundle.js"
+			sed -i 's/return !!this.get("developer_mode");/return true;/g' $no_extension/bundle.js;
+		fi
+
+		#re-zip the .spa fodler (and therefore the changed files) and remove the folder afterwards. It is important that zip is used because .spa are basically .zip.
+		if [[ "$no_extension" != "$APPSDIR/.backups" ]]; then
+			rm $file;
+			cd $no_extension;
+			zip -r $file *;
+			cd - 1> /dev/null;
+			rm -rf $no_extension;
 		fi
 	done
-
-	if [[ $no_path == "zlink.spa" ]]; then
-		echo "$no_extension/bundle.js"
-		sed -i 's/return !!this.get("developer_mode");/return true;/g' $no_extension/bundle.js;
-	fi
-
-	#re-zip the .spa fodler (and therefore the changed files) and remove the folder afterwards. It is important that zip is used because .spa are basically .zip.
-	if [[ "$no_extension" != "$APPSDIR/.backups" ]]; then
-		rm $file;
-		cd $no_extension;
-		zip -r $file *;
-		cd - 1> /dev/null;
-		rm -rf $no_extension;
-	fi
-done
+fi
 
 if [[ ! -d $ICONSDIR/.backups ]]; then
 	mkdir $ICONSDIR/.backups;
