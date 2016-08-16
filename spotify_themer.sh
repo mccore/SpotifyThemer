@@ -114,14 +114,17 @@ if [ "$DO_COLORS" = true ]; then
 	    # There are only two such cases, so this naive regex will do.
 	    CHARTS="*chart*"
 		for style in $no_extension/css/*; do
-	     	if ! [[ $style == $CHARTS ]];then
 				echo $style;
 				for code in $SPOTIFY_GREEN; do
 					sed -i "s/$code/$choice/g" $style;
 				done
-			fi
+	     	# Super hacky fix, but it works
+			if [[ $style == $CHARTS ]];then
+				sed -i '/^.trend-mark.trend-up/,/}$/ s/color:.*/color: #1ED760;/g' $style
+ 			fi
 		done
-
+		
+		# FIXME: This should probably be enabled as an option
 		if [[ $no_path == "zlink.spa" ]]; then
 			echo "$no_extension/bundle.js"
 			sed -i 's/return !!this.get("developer_mode");/return true;/g' $no_extension/bundle.js;
