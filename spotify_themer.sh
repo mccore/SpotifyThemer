@@ -29,10 +29,10 @@ ICONSDIR="/usr/share/spotify/icons"
 # Assume false
 DO_ICONS=false
 DO_COLORS=false
-while getopts ":C:I:cih" opt; do
+DO_DEV_MODE=false
+while getopts ":C:I:cihd" opt; do
   case $opt in
     C)
-      #echo "-c was triggered, Parameter: $OPTARG" >&2
       if [ ${COLORS[$OPTARG]} ]; then
         export choice=${COLORS[$OPTARG]}
       else
@@ -44,8 +44,10 @@ while getopts ":C:I:cih" opt; do
         export DO_COLORS=true
         ;;
      i)
-      #echo "-i was triggered" >&2
       export DO_ICONS=true
+      ;;
+      d)
+      export DO_DEV_MODE=true
       ;;
      I)
       if [ ${COLORS[$OPTARG]} ]; then
@@ -56,7 +58,6 @@ while getopts ":C:I:cih" opt; do
       export DO_ICONS=true
       ;;
      h)
-      #echo "-h was triggered" >&2
       echo "SpotifyThemer - Customize the theme of spotify for linux"
       echo " "
       #echo "spotify_themer [options] [COLOR]"
@@ -123,9 +124,8 @@ if [ "$DO_COLORS" = true ]; then
 				sed -i '/^.trend-mark.trend-up/,/}$/ s/color:.*/color: #1ED760;/g' $style
  			fi
 		done
-		
-		# FIXME: This should probably be enabled as an option
-		if [[ $no_path == "zlink.spa" ]]; then
+
+		if [[ $no_path == "zlink.spa" && $DO_DEV_MODE == true ]]; then
 			echo "$no_extension/bundle.js"
 			sed -i 's/return !!this.get("developer_mode");/return true;/g' $no_extension/bundle.js;
 		fi
