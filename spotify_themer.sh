@@ -117,7 +117,7 @@ if [ "$DO_COLORS" = true ]; then
 		for style in $no_extension/css/*; do
 				echo $style;
 				for code in $SPOTIFY_GREEN; do
-					sed -i "s/$code/$choice/g" $style;
+					sed -i "s/$code/$choice/gi" $style;
 				done
 	     	# Super hacky fix, but it works
 			if [[ $style == $CHARTS ]];then
