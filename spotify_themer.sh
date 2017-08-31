@@ -5,7 +5,7 @@
 declare -A COLORS
 #These are the different color codes
 #for spotify's default theme
-SPOTIFY_GREEN="1ED760 1DB954 1CA24B"
+SPOTIFY_GREEN="1ED760 1DB954 1CA24B 1ED660 1BD85E"
 COLORS["RED"]="F44236"
 COLORS["CYAN"]="33E3FF"
 COLORS["GREEN(DEF)"]="1ED760"
